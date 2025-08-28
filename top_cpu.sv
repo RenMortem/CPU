@@ -45,15 +45,15 @@ logic [3:0] c5_aux;
 logic [6:0] cmd_inAUX, out_cmdIN;
 //wire out_muxA1, out_muxB1;
 
-	mux_4 mux_4_A (
+	mux4 mux_4_A ( 		//Mux A de entrada
 		.din1 (din_1),
 		.din2 (din_2),
 		.din3 (din_3),
 		.din4 (din_4),
-		.select (c1_aux),//(selectA),
+		.sel (c1_aux),//(selectA),
 		.dout (out_muxAaux)
 	);
-	mux_4 mux_4_B (
+	mux4 mux_4_B (		//Mux B de entrada
 		.din1 (din_1),
 		.din2 (din_2),
 		.din3 (din_3),
@@ -62,7 +62,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.dout (out_muxBaux)
 	);
 
-	register_bank register_bank_1(
+	register_bank register_bank_1(	//registro 1 conectado que recibe el bit de salida del mux A
 		.clk (clk1),
 		.reset (reset1),
 		.enable (c3_aux),//(enable1),
@@ -70,7 +70,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.outQ (in1a_aux)//(out_reg1)
 	);
 
-	register_bank register_bank_2(
+	register_bank register_bank_2(	//registro 2 conectado que recible el bit de salida del mux B
 		.clk (clk1),
 		.reset (reset1),
 		.enable (c3_aux),//(enable1),
@@ -78,52 +78,52 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.outQ (in2b_aux)//(out_reg2)
 	);
 
-	alu Alu_1(
-		.in1a (in1a_aux),
-		.in2b (in2b_aux),
-		.op (c5_aux),//(op),
-		.nvalid_data (c4_aux),//(nvalid_data),
+	ALU Alu_1(					
+		.in1 (in1a_aux), //se conecta a la salida del registro 1
+		.in2 (in2b_aux), //se conecta a la salida del registro 2
+		.op (c5_aux),//(op), //se conecta al control
+		.nvalid_data (c4_aux),//(nvalid_data), //se conecta al control
 		.out (out_ALU),
-		.zero (zero),
-		.error (error)
+		.zero (zero), //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR UN REGISTRO PARALELO - PARALELO
+		.error (error) //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR AL MISMO REGISTRO PARALELO - PARALELO QUE ZERO
 	);
 
-	mux_2 mux_2A(
-		.in1_c (out_aluAUX2),
-		.in2_c (in_memory),
-		.select_c (c8_aux),//(select_c),
-		.out_c (inD_aux3m)
+	mux_2 mux_2C(          		//MUX DE 16 BITS
+		.in1_c (out_aluAUX2),   //se conecta a la salida de la ALU 
+		.in2_c (in_memory),		//se conecta a la data_at o salida de memoria
+		.select_c (c8_aux),//(select_c), //se conecta a la unidad de control
+		.out_c (inD_aux3m) 		//se conecta a la entrada del registro 3 que es de 16 btis
 	);
 
-	register_bank2 register_bank_3(
+	register_bank2 register_bank_3( //registro de 16 btis
 		.clk (clk1),
 		.reset (reset1),
-		.enable (c9_aux),//(enable1),
-		.inD (inD_aux3r),
-		.outQ (out_reg3)//(out_reg2)
+		.enable (c9_aux),//(enable1), //se conecta a la unidad de control
+		.inD (inD_aux3r),			//se conecta a la salida del MuxC
+		.outQ (out_reg3)//(out_reg2) //salida del registro
 	);
 	
 	memory memory_ins(
 		.clk (clk1),
-		.we (we1),
-		.addr (din_1),
-		.wdata (c6_aux),//(wdata),
-		.rdata (c7_aux) //(in_memory)
+		.we (we1), //COMPLETAR
+		.addr (din_1), //se conecta a la entrada del mux A din1
+		.wdata (c6_aux),//(wdata), //se conecta al control
+		.rdata (c7_aux) //(in_memory) //se conecta al control
 	);
 	
-	register_bank3 register_bank_5(
+	register_bank3 register_bank_5( //registro para almacenar los bits del CMD_IN
 		.clk (clk1),
 		.reset (reset1),
-		.enable (c10_aux),//(enable1),
-		.inD (cmd_inAUX),
-		.outQ (out_cmdIN)//(out_reg2)
+		.enable (c10_aux),//(enable1), //se conecta al control
+		.inD (cmd_inAUX), //toma los valores del CMD_IN
+		.outQ (out_cmdIN)//(out_reg2) //salida del registro que se conecta al control
 	);
 
 	control_cpu control_cpuinst(
 		.clk (clk1),//clk general
 		.rst (reset1),//reset general
-		.cmd_in (out_cmdIN),//cmd_in general
-		.aluin_reg_en (c3_aux),//(aluin_reg_en ),
+		.cmd_in (out_cmdIN),//cmd_in general //toma el dato desde la salidadel registro
+		.aluin_reg_en (c3_aux),//(aluin_reg_en ), //se conecta al control para habilitar  el registro
 		.datain_reg_en (c10_aux),//(datain_reg_en ),
 		.memoryWrite (c6_aux),//(memoryWrite),
 		.memoryRead (c7_aux),//(memoryRead ),
@@ -146,5 +146,6 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
