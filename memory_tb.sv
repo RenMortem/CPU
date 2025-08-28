@@ -2,84 +2,73 @@
 
 module tb_memory;
 
-  // Parámetros
-  localparam WIDTH = 8;
+    parameter WIDTH = 4; // ancho de dirección pequeño para la prueba
+    logic clk;
+    logic write, read;
+    logic [WIDTH-1:0] address;
+    logic [2*WIDTH-1:0] data_in;
+    logic [2*WIDTH-1:0] data_out;
 
-  // Señales
-  logic clk;
-  logic we;
-  logic [WIDTH-1:0] addr;
-  logic [2*WIDTH-1:0] wdata;
-  logic [2*WIDTH-1:0] rdata;
+    // Instanciamos la memoria
+    memory #(.WIDTH(WIDTH)) dut (
+        .clk(clk),
+        .write(write),
+        .read(read),
+        .address(address),
+        .data_in(data_in),
+        .data_out(data_out)
+    );
 
-  // Instancia de DUT
-  memory #(.WIDTH(WIDTH)) dut (
-    .clk(clk),
-    .we(we),
-    .addr(addr),
-    .wdata(wdata),
-    .rdata(rdata)
-  );
+    // Generador de reloj
+    initial clk = 0;
+    always #5 clk = ~clk; // periodo = 10 ns
 
-  // Generación de reloj
-  initial clk = 0;
-  always #5 clk = ~clk; // Periodo 10 ns
+    // Estímulos
+    initial begin
+        // Inicialización
+        write   = 0;
+        read    = 0;
+        address = 0;
+        data_in = 0;
 
-  // Estímulos
-  initial begin
-    // Inicialización
-    we = 0;
-    addr = 0;
-    wdata = 0;
+        // Esperamos un ciclo de reloj
+        @(posedge clk);
 
-    // Reset artificial (si quieres tener un setup inicial estable)
-    #10;
+        // --------- Escritura en varias direcciones ---------
+        // Escribir 0xAA en dirección 0
+        address = 0;
+        data_in = 8'hAA;
+        write   = 1;
+        @(posedge clk);
+        write   = 0;
 
-    // ---- Caso 1: Escritura y lectura correcta ----
-    @(posedge clk);
-    we = 1;
-    addr = 8'h01;
-    wdata = 16'hABCD;
+        // Escribir 0x55 en dirección 1
+        address = 1;
+        data_in = 8'h55;
+        write   = 1;
+        @(posedge clk);
+        write   = 0;
 
-    @(posedge clk);
-    we = 0;
-    addr = 8'h01;
-    #2; // Esperar un poco
-    $display("Lectura de addr=0x%0h -> rdata=0x%0h", addr, rdata);
+        // --------- Lectura de las direcciones escritas ---------
+        // Leer dirección 0
+        address = 0;
+        read    = 1;
+        @(posedge clk);
+        $display("Read addr=0 -> data_out=0x%h (expected 0xAA)", data_out);
 
-    // ---- Caso 2: Escritura en otra dirección ----
-    @(posedge clk);
-    we = 1;
-    addr = 8'h02;
-    wdata = 16'h1234;
+        // Leer dirección 1
+        address = 1;
+        read    = 1;
+        @(posedge clk);
+        $display("Read addr=1 -> data_out=0x%h (expected 0x55)", data_out);
 
-    @(posedge clk);
-    we = 0;
-    addr = 8'h02;
-    #2;
-    $display("Lectura de addr=0x%0h -> rdata=0x%0h", addr, rdata);
+        // --------- Caso cuando read=0 ---------
+        read = 0;
+        @(posedge clk);
+        $display("Read=0 -> data_out=0x%h (expected 0x00)", data_out);
 
-    // ---- Caso 3: Dirección fuera de rango (para activar assertion) ----
-    @(posedge clk);
-    we = 1;
-    addr = (2**WIDTH); // fuera de rango
-    wdata = 16'hDEAD;
-
-    @(posedge clk);
-    we = 0;
-
-    // ---- Caso 4: Dirección desconocida (para activar otra assertion) ----
-    @(posedge clk);
-    we = 1;
-    addr = 'hx; // dirección inválida
-    wdata = 16'hBEEF;
-
-    @(posedge clk);
-    we = 0;
-
-    // ---- Fin de simulación ----
-    #20;
-    $finish;
-  end
+        // Fin de simulación
+        $finish;
+    end
 
 endmodule
