@@ -120,6 +120,10 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.outQ (out_cmdIN)//(out_reg2) //salida del registro que se conecta al control
 	);
 
+	register_2bits register_2bits_4 (
+		
+	);
+
 	control_cpu control_cpuinst(
 		.clk (clk),//clk general
 		.rst (reset),//reset general
@@ -147,6 +151,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
 
