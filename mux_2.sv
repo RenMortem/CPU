@@ -11,11 +11,12 @@ module mux_2 #(
 always @(*) begin
 
 	case (select_c)
-		1'b0: out_c=in1_c;
-		1'b1: out_c=in2_c;
-		default: out_c=in1_c;
+		1'b0: out_c = in1_c;
+		1'b1: out_c = in2_c;
+		default: out_c = in1_c;
 	
 	endcase
 
 end
 endmodule
+
