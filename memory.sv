@@ -1,32 +1,45 @@
 module memory #(parameter WIDTH = 8) (
-	input logic clk,
-	input logic we,
-	input logic [WIDTH-1:0] addr,
-	input logic [2*WIDTH-1:0] wdata,
-	output logic [2*WIDTH-1:0] rdata);
+    input  logic clk,
+    input  logic write,
+    input  logic read,
+    input  logic [WIDTH-1:0] address,
+    input  logic [2*WIDTH-1:0] data_in,
+    output logic [2*WIDTH-1:0] data_out
+);
 
-logic [2*WIDTH-1:0] mem [(2**WIDTH)-1:0];
+    // Memoria con 2^WIDTH posiciones, cada una de 2*WIDTH bits
+    logic [2*WIDTH-1:0] mem [(2**WIDTH)-1:0];
 
-always_ff @(posedge clk) begin
-	if(we)
-		mem[addr] <= wdata;
-		assert(addr <= (2**WIDTH-1)) else
-			$error("Memory address out of range %0d", addr); //assertion tipo inmediata
-end
+    // Escritura síncrona
+    always_ff @(posedge clk) begin
+        if (write) begin
+            mem[address] <= data_in;
+            assert(address <= (2**WIDTH-1)) else
+                $error("Memory address out of range %0d", address); //assert inmediata
+        end
+    end
 
-assign rdata = mem[addr];
+    // Lectura síncrona (registrada en flanco de clk)
+    always_ff @(posedge clk) begin
+        if (read)
+            data_out <= mem[address];
+        else
+            data_out <= '0;   // o podrías dejar el valor anterior si prefieres
+    end
 
-property p_no_unknown_addr; //assertion concurrente
-	@(negedge clk)
-	disable iff (!we) addr |-> !($isunknown(addr));
-endproperty 
-assert property (p_no_unknown_addr);
+    // Assertion: dirección no debe ser desconocida cuando se escribe
+    property p_no_unknown_addr;
+        @(negedge clk)
+        disable iff (!write) address |-> !($isunknown(address));
+    endproperty
+    assert property (p_no_unknown_addr);
 
-property same_address_feedback;
-	@(posedge clk)
-	(we && $stable(addr)) ##1
-	addr == $past(addr) |-> rdata == $past(wdata);
-endproperty
+    // Assertion: si escribes y mantienes la dirección, la lectura posterior debe coincidir
+    property same_address_feedback;
+        @(posedge clk)
+        (write && $stable(address)) ##1
+        address == $past(address) |-> data_out == $past(data_in);
+    endproperty
+    assert property(same_address_feedback);
 
-assert property(same_address_feedback);
 endmodule
