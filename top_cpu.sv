@@ -1,4 +1,4 @@
-module mux_instancia #(
+module top_cpu #(
 	parameter WIDTH = 8
 )
 
@@ -146,4 +146,5 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
