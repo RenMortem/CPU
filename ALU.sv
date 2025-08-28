@@ -26,14 +26,9 @@ always @(*) begin
 	if (nvalid_data) begin
 		case (op) 
 			4'b0000: out = in1 + in2; 
-			//	zero = (out == 'b0) ? 1'b1 : 1'b0;
 			4'b0001: out = in1 - in2;
-			//	zero = (out == 0) ? 1'b1 : 1'b0;
 			4'b0010: out = in1 * in2;
-			//	zero = (out == 0) ? 1'b1 : 1'b0;
 			4'b0011: out = in1 / in2;
-			//	zero = (out == 0) ? 1'b1 : 1'b0;
-			//	error = (in2 == 0) ? 1'b1 : 1'b0
 		default: out = 0;
 	endcase
 	end
@@ -41,3 +36,4 @@ always @(*) begin
 end
 
 endmodule
+
