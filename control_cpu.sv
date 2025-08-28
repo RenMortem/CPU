@@ -13,50 +13,23 @@ module control_cpu (
 	output logic [2:0] opcode //c5 operacion de la alu
 );
 	typedef enum logic [1:0] {
-//parameter //[1:0] 
 		RESET = 2'b00,
 		FETCH = 2'b01,
 		LOAD = 2'b10,
 		EXECUTE = 2'b11}
 		state_n;
-//	reg [1:0]
-       state_n	current_state, next_state;
-
-//	parameter  [1:0] reset= 2'b00;
-//	parameter  [1:0] fetch= 2'b01;
-//	parameter  [1:0] load = 2'b10;
-//	parameter  [1:0] execute = 2'b11;
-
-//	reg [1:0] state_n;
-//	reg [1:0] current_state, next_state;	
+       state_n	current_state, next_state;	
 
 	always_ff @(posedge clk or posedge rst) begin
-		if (rst) //begin
+		if (rst) 
 			current_state <= RESET;
-		//	aluin_reg_en = 0;
-		//	datain_reg_en = 0;
-		//	memoryWrite = 0;
-		//	memoryRead = 0;
-		//	selmux2 = 0;
-		//	cpu_rdy= 0;
-		//	aluout_reg_en = 0;
-		//	nvalid_data = 0;
-		//	in_select_a = 2'b00;
-		//	in_select_b = 2'b00;
 
 		else 
 			current_state <= next_state;
 		end
-//	end
-//
-//
-//
-//
-//
-//
-//
+
 //______________________________________________________________________________________
-//	always @(current_state) begin
+
 	always_comb begin
 		next_state = current_state;
 		 unique case (current_state)
@@ -70,8 +43,6 @@ module control_cpu (
 //______________________________________________________________________________________
 
 	always_comb begin
-
-		//case (current_state)
 
 			aluin_reg_en = 0;
 			datain_reg_en = 0;
@@ -89,7 +60,6 @@ module control_cpu (
 			case(current_state)//instruccion de 7bits
 				RESET: begin 
 
-				//	if(cmd_in == fetch) begin
 					aluin_reg_en = 0;
 					datain_reg_en = 0;
 					memoryWrite = 0;
@@ -102,13 +72,9 @@ module control_cpu (
 					in_select_b = 2'b00;
 				end
 
-		//	end //puede estar de mas
-		//	endcase
 //______________________________________________________________________________________ 
-			//	case(cmd_in)//instruccion de 7bits
-			//	7'b0000010: 
+
 			FETCH: begin
-					//if(cmd_in == load) begin
 					aluin_reg_en = 0;
 					datain_reg_en = 1;
 					memoryWrite = 1;
@@ -121,13 +87,10 @@ module control_cpu (
 					in_select_b = 2'b00;
 					opcode = 3'b000;
 				end
-			//end //puede estar de mas
-			//endcase 
+
 //__________________________________________________________________________________________
-			//case(cmd_in)//instruccion de 7bits
-			//	7'b0000011: 
+
 			LOAD: begin
-				//	if(cmd_in == execute) begin
 					aluin_reg_en = 1;
 					datain_reg_en = 0;
 					memoryWrite = 0;
@@ -140,11 +103,8 @@ module control_cpu (
 					in_select_b = cmd_in[4:3];//2'b00;
 					opcode = 3'b000;
 				end
-			//end //puede estar de mas //topic trends
-			//endcase 
 //_________________________________________________________________________________________
 			EXECUTE: begin
-				//	if(cmd_in == execute) begin
 					aluin_reg_en = 0;
 					datain_reg_en = 0;
 					memoryWrite = 0;
@@ -155,8 +115,9 @@ module control_cpu (
 					nvalid_data = 0;
 					in_select_a = 2'b00;
 					in_select_b = 2'b00;
-					opcode = cmd_in[2:0];//3'b000;
+					opcode = cmd_in[2:0];
 				end
 			endcase
 		end
 	endmodule
+
