@@ -39,7 +39,7 @@ module top_cpu #(
 logic [WIDTH-1:0] inD_aux1, inD_aux2, out_muxAaux, out_muxBaux;
 logic [WIDTH-1:0] in1a_aux, in2b_aux;//auxiliar para conectar la alu con el reg a y b, se puede crear otra señal auxiliar para el reg a y b y asignarle el valor en la ultima parte de la descripcion
 logic [2*WIDTH-1:0] out_aluAUX2, inD_aux3m, inD_aux3r, in_memory, wdata;
-logic c3_aux, c10_aux, c6_aux, c7_aux, c8_aux, c9_aux, c4_aux;
+logic c3_aux, c10_aux, c6_aux, c7_aux, c8_aux, c9_aux, c4_aux; aux_zero; aux_error;
 logic [1:0] c1_aux, c2_aux;
 logic [3:0] c5_aux;
 logic [6:0] cmd_inAUX, out_cmdIN;
@@ -84,8 +84,8 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.op (c5_aux),//(op), //se conecta al control
 		.nvalid_data (c4_aux),//(nvalid_data), //se conecta al control
 		.out (out_ALU),
-		.zero (zero), //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR UN REGISTRO PARALELO - PARALELO
-		.error (error) //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR AL MISMO REGISTRO PARALELO - PARALELO QUE ZERO
+		.zero (aux_zero), //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR UN REGISTRO PARALELO - PARALELO aux_zero
+		.error (aux_error) //POR AHORA SALIDA DIRECTA DEL TOP, SE DEBE CONECTAR AL MISMO REGISTRO PARALELO - PARALELO QUE ZERO aux_error
 	);
 
 	mux_2 mux_2C(          		//MUX DE 16 BITS
@@ -121,7 +121,13 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 	);
 
 	register_2bits register_2bits_4 (
-		
+		.clk (clk),
+		.rst (reset),
+		.wr_en (c9_aux),
+		.zero (aux_zero),
+		.error (aux_error),
+		.q1 (zero),
+		.q2 (error)
 	);
 
 	control_cpu control_cpuinst(
@@ -151,6 +157,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
 
