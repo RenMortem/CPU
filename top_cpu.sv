@@ -121,13 +121,13 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 	);
 
 	register_2bits register_2bits_4 (
-		.clk (clk),
+		.clk (clk), 
 		.rst (reset),
-		.wr_en (c9_aux),
-		.zero (aux_zero),
-		.error (aux_error),
-		.q1 (zero),
-		.q2 (error)
+		.wr_en (c9_aux), //habilitador del registro que se conecta al modulo de control
+		.zero (aux_zero), //dato zero de la alu que ingresa al registro
+		.error (aux_error), //dato error de la alu que ingresa al registro
+		.q1 (zero), //salida del registro, que proporciona el dato zero de la alu anteriormente almacenado
+		.q2 (error) //salida del registro, que proporciona el dato error de la alu anteriormente almacenado
 	);
 
 	control_cpu control_cpuinst(
@@ -157,6 +157,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
 
