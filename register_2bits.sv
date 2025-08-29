@@ -1,4 +1,4 @@
-module register_bank #(parameter WIDTH = 8)
+module register_2bits #(parameter WIDTH = 8)
 	(input clk,
 	input rst,
 	input wr_en,
@@ -17,3 +17,4 @@ always @(posedge clk)begin
 end	
 
 endmodule
+
