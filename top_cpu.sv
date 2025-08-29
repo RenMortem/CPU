@@ -50,7 +50,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.din2 (din_2),
 		.din3 (din_3),
 		.din4 (din_4),
-		.sel (c1_aux),//(selectA),
+		.select (c1_aux),//(selectA),
 		.dout (out_muxAaux)
 	);
 	mux4 mux_4_B (		//Mux B de entrada
@@ -157,6 +157,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
 
