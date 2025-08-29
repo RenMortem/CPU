@@ -157,12 +157,3 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
-
-
-
-
-
-
-
-
-
