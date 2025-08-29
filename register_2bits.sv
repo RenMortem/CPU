@@ -3,7 +3,7 @@ module register_2bits #(parameter WIDTH = 8)
 	input rst,
 	input wr_en,
 	input [WIDTH-1:0] zero, error,  //din1 se modifico por zero y din2 se modifico por error
-	output [WIDTH-1:0] q1, q2);
+	output reg [WIDTH-1:0] q1, q2);
 
 always @(posedge clk)begin
 	if (rst) begin
@@ -17,4 +17,5 @@ always @(posedge clk)begin
 end	
 
 endmodule
+
 
