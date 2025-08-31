@@ -35,7 +35,7 @@ module top_cpu #(
 	output logic error
 );
 
-logic [WIDTH-1:0] inD_aux1, inD_aux2, out_muxAaux, out_muxBaux;
+	logic [WIDTH-1:0] inD_aux1, inD_aux2, w_muxA_regA, w_muxB_regB;
 logic [WIDTH-1:0] in1a_aux, in2b_aux;//auxiliar para conectar la alu con el reg a y b, se puede crear otra señal auxiliar para el reg a y b y asignarle el valor en la ultima parte de la descripcion
 	logic [2*WIDTH-1:0] out_aluAUX2, w_mux2_reg2, in_memory, wdata, w_reg2_mem_muxB_muxA;
 logic c3_aux, c10_aux, c6_aux, c7_aux, c8_aux, c9_aux, c4_aux, aux_zero, aux_error;
@@ -50,7 +50,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.din3 (din_3),
 		.din4 (w_reg2_mem_muxB_muxA),
 		.select (c1_aux),//(selectA),
-		.dout (out_muxAau)
+		.dout (w_muxA_regA)
 	);
 	mux4 mux_4_B (		//Mux B de entrada
 		.din1 (din_1),
@@ -58,14 +58,14 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.din3 (din_3),
 		.din4 (w_reg2_mem_muxB_muxA),
 		.select (c2_aux),//(selectB),
-		.dout (out_muxBaux)
+		.dout (w_muxB_regB)
 	);
 
 	register_bank register_bank_1(	//registro 1 conectado que recibe el bit de salida del mux A
 		.clk (clk),
 		.reset (reset),
 		.enable (c3_aux),//(enable1),
-		.inD (inD_aux1),
+		.inD (w_muxA_regA),
 		.outQ (in1a_aux)//(out_reg1)
 	);
 
@@ -73,7 +73,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.clk (clk),
 		.reset (reset),
 		.enable (c3_aux),//(enable1),//enables de los registros que habilita el controlador
-		.inD (inD_aux2),
+		.inD (w_muxB_regB),
 		.outQ (in2b_aux)//(out_reg2)
 	);
 
@@ -115,7 +115,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.clk (clk),
 		.reset (reset),
 		.enable (c10_aux),//(enable1), //se conecta al control
-		.inD (cmd_inAUX), //toma los valores del CMD_IN
+		.inD (cmd_in), //toma los valores del CMD_IN
 		.outQ (out_cmdIN)//(out_reg2) //salida del registro que se conecta al control
 	);
 
@@ -150,6 +150,7 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
 
