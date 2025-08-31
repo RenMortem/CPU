@@ -21,7 +21,7 @@ module top_cpu #(
 	//input select_c,
 	//input wire [WIDTH-1:0] addr,
 	//input wire [2*WIDTH-1:0] wdata, rdata,
-	input logic [WIDTH-1:0] din_1, din_2, din_3, din_4,
+	input logic [WIDTH-1:0] din_1, din_2, din_3,
 	//input wire [WIDTH-1:0] in1a, in2b,
 	//input wire [1:0] selectA, selectB,
 	//input wire [3:0] op,
@@ -31,7 +31,6 @@ module top_cpu #(
  	//output wire reg [WIDTH-1:0] out_muxA, //out_muxB,i
 	//output wire [2*WIDTH-1:0] out_ALU,//salida de la alu
 	//output wire reg [WIDTH-1:0] out_reg1, out_reg2,
-	output logic [2*WIDTH-1:0] out_reg3,
 	output logic zero,
 	output logic error
 );
@@ -156,5 +155,6 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 
 	
 endmodule
+
 
 
