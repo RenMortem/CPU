@@ -146,15 +146,11 @@ logic [6:0] cmd_inAUX, out_cmdIN;
 		.opcode (c5_aux)//(opcode ) //conectado al control del cpu
 	);
 
-	assign inD_aux1 = out_muxAaux;
-	assign inD_aux2 = out_muxBaux;
-	assign out_aluAUX2 = out_ALU;
-	assign wdata = out_reg3;
-	assign cmd_inAUX = cmd_in;
 
 
 	
 endmodule
+
 
 
 
